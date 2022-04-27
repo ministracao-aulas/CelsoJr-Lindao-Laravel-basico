@@ -15,7 +15,9 @@ Route::get('/ola-mundo', function () {
 
 Route::get('/tarefas', [TarefaController::class, 'index']);
 
-Route::get('/tarefas/create', [TarefaController::class, 'create']);
+Route::get('/tarefas/create', function () {
+    return view('tarefas.create');
+});
 
 Route::post('/tarefas/store', function (Request $request) {
     $tarefa = Tarefa::create([
@@ -89,4 +91,16 @@ Route::get('/tarefas/undone/{tarefa}', function ($tarefaId) {
         ->with('success', "Tarefa " . $tarefaId ." marcada como não concluída");
 });
 
-Route::get('/tarefas/delete/{tarefa}', [TarefaController::class, 'delete']);
+Route::get('/tarefas/delete/{tarefa}', function ($tarefaId) {
+    $tarefa = Tarefa::where('id', $tarefaId)->first();
+
+    if (!$tarefa) {
+        return redirect('tarefas')
+            ->with('error', 'Tarefa não encontrada');
+    }
+
+    $tarefa->delete();
+
+    return redirect('tarefas')
+        ->with('success', "Tarefa " . $tarefaId ." excluída");
+});
