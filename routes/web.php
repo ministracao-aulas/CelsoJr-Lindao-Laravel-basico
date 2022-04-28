@@ -17,76 +17,14 @@ Route::get('/tarefas', [TarefaController::class, 'index']);
 
 Route::get('/tarefas/create', [TarefaController::class, 'create']);
 
-Route::post('/tarefas/store', function (Request $request) {
-    $tarefa = Tarefa::create([
-        'done' => $request->input('done'),
-        'title' => $request->input('title'),
-    ]);
+Route::post('/tarefas/store', [TarefaController::class, 'store']);
 
-    if (!$tarefa) {
-        return redirect('tarefas')
-            ->with('error', 'Falha ao criar tarefa');
-    }
+Route::get('/tarefas/edit/{tarefa}', [TarefaController::class, 'edit']);
 
-    return redirect('tarefas')
-        ->with('success', "Tarefa " . $tarefa->id ." criada com successo");
-});
+Route::post('/tarefas/update/{tarefa}', [TarefaController::class, 'update']);
 
-Route::get('/tarefas/edit/{tarefa}', function ($tarefaId) {
-    $tarefa = Tarefa::where('id', $tarefaId)->first();
+Route::get('/tarefas/done/{tarefa}', [TarefaController::class, 'done']);
 
-    if (!$tarefa) {
-        return redirect('tarefas')->with('error', 'Tarefa não encontrada');
-    }
-
-    return view('tarefas.edit', [
-        'tarefa' => $tarefa,
-    ]);
-});
-
-Route::post('/tarefas/update/{tarefa}', function (Request $request, $tarefaId) {
-    $tarefa = Tarefa::where('id', $tarefaId)->first();
-
-    if (!$tarefa) {
-        return redirect('tarefas')
-            ->with('error', 'Tarefa não encontrada');
-    }
-
-    $tarefa->update([
-        'done' => $request->input('done'),
-        'title' => $request->input('title'),
-    ]);
-
-    return redirect('tarefas')
-        ->with('success', "Tarefa " . $tarefaId ." atualizada");
-});
-
-Route::get('/tarefas/done/{tarefa}', function ($tarefaId) {
-    $tarefa = Tarefa::where('id', $tarefaId)->first();
-
-    if (!$tarefa) {
-        return redirect('tarefas')
-            ->with('error', 'Tarefa não encontrada');
-    }
-
-    $tarefa->update(['done' => true]);
-
-    return redirect('tarefas')
-        ->with('success', "Tarefa " . $tarefaId ." marcada como concluída");
-});
-
-Route::get('/tarefas/undone/{tarefa}', function ($tarefaId) {
-    $tarefa = Tarefa::where('id', $tarefaId)->first();
-
-    if (!$tarefa) {
-        return redirect('tarefas')
-            ->with('error', 'Tarefa não encontrada');
-    }
-
-    $tarefa->update(['done' => false]);
-
-    return redirect('tarefas')
-        ->with('success', "Tarefa " . $tarefaId ." marcada como não concluída");
-});
+Route::get('/tarefas/undone/{tarefa}', [TarefaController::class, 'undone']);
 
 Route::get('/tarefas/delete/{tarefa}', [TarefaController::class, 'delete']);
